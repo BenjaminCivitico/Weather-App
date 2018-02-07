@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--Meta Tags I have to include-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Weather App</title>
+  <meta name="author" content="Benjamin Civitico">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon">
+
+  <!-- Bootstrap 4.0 CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <!-- JQuery -->
+  <script type="text/javascript" src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Slabo+27px|Open+Sans|Source+Sans+Pro" rel="stylesheet">
+
+  <!-- Google Analytics-->
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-XXXXXXXX-Y']);
+  _gaq.push(['_trackPageview']);
+  (function()
+  {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
+
+  <script type="text/javascript">
+  var temperature = 0;
+
+  $( document ).ready(function(){
+    getLocation();
+  });
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(getWeather);
+    } else {
+      $("#weatherDebug").text("Geolocation is not supported by this browser.");
+    }
+
+    function getWeather(position) {
+      $.getJSON("https://fcc-weather-api.glitch.me/api/current?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude, function(a){
+        console.log(a);
+        temperature = a.main.temp;
+        setIcon(a.weather[0].icon);
+        $("#weatherLocation").html("Weather for: " + a.name);
+        $("#weatherTemperature").html(Math.round(temperature) + "<a id=\"convertTempF\">C</a>");
+        $("#convertTempF").click(convertToF);
+      })
+    }
+
+    function setIcon(iconAddress){
+      $("#weatherIcon").attr("src", iconAddress);
+    }
+
+    function convertToF(){
+      $("#weatherTemperature").html(Math.round(temperature * 9 / 5 + 32) + "<a id=\"convertTempC\">F</a>");
+      $("#convertTempC").click(convertToC);
+    }
+    function convertToC(){
+      $("#weatherTemperature").html(Math.round(temperature) + "<a id=\"convertTempF\">C</a>");
+      $("#convertTempF").click(convertToF);
+    }
+
+  }
+
+  </script>
+
+  <style>
+  body{
+  }
+  h1{
+    font-weight: bold;
+    font-family: 'Slabo+27px', serif;
+  }
+
+  p{
+    font-family: 'Source Sans Pro', sans-serif; 
+  }
+
+  #pageContent{
+    height: 90vh;
+    background: linear-gradient(to bottom right, RGB(241,30,80), RGB(98,36,90));
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  }
+  #weatherBox{
+    background: white;
+    border-radius: 10px;
+  }
+
+  .footer{
+
+  }
+  </style>
+
+
+
+</head>
+<body>
+  <div id="pageContent" class="container-fluid d-flex align-items-center justify-contents-center">
+    <div id="weatherBox" class="container p-2">
+      <div class="row">
+        <div class="col text-center"><h1 id="weatherLocation">Loading Weather!</h1></div>
+      </div>
+      <div class="row">
+        <div class="col"></div>
+        <div class="col d-flex flex-column align-items-center justify-contents-center text-center">
+          <img class="container-fluid m-auto" src="images/load.gif" id="weatherIcon" />
+          <h2 id="weatherTemperature"></h2>
+        </div>
+        <div class="col"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <hr>
+    <p class="text-center">Written and coded by <a href="http://benjamin.civitico.com">Benjamin Civitico</a></p>
+  </div>
+</body>
+</html>
